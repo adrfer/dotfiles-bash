@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+target="${HOME}/.dotfiles-bash"
+source='https://github.com/adrfer/dotfiles-bash.git'
+
+# Bail if git cannot be found
+if ! command -v 'git' >/dev/null; then
+    echo -n 'Ooops, git not found.'
+    exit 1
+fi
+
+# Backup existing files, if any
+if [[ -d "${target}" ]]; then
+    echo -n 'Backing up existing bash files...'
+    mv -f "${target}"{,"$(date '+ %F at %H.%M.%S %p')"}
+    echo ' done.'
+fi
+
+# Download new files
+echo -n 'Downloading some bash badassery...'
+if git clone "${source}" "${target}" >/dev/null 2>&1; then
+  echo ' done.'
+else
+  echo
+  echo "Ooops, unable to access ${source}, try again."
+  exit 1
+fi
+
+# Setup existing and new files
+echo -n 'Setting up your bash profile...'
+ln -sf "${target}/bash_profile" "${HOME}/.bash_profile"
+echo ' done.'
+
+# Return successfully, just in case
+echo 'All good, enjoy!'
+exit 0
