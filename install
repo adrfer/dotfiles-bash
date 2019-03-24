@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-target_repo="${HOME}/.dotfiles-bash"
-source_repo='https://github.com/adrfer/dotfiles-bash.git'
+target_dotfiles="${HOME}/.dotfiles-bash"
+source_dotfiles='https://github.com/adrfer/dotfiles-bash.git'
 
 target_profile="${HOME}/.bash_profile"
-source_profile="${target_repo}/bash_profile"
+source_profile="${target_dotfiles}/bash_profile"
 
 # Bail if git cannot be found
 if ! command -v 'git' >/dev/null; then
@@ -15,31 +15,31 @@ fi
 # Backup existing files, if any
 echo -n 'Backing up existing bash files...'
 
-if [[ -d "${target_repo}" ]]; then
-    mv -f "${target_repo}"{,"$(date '+ %F at %H.%M.%S %p')"}
+if [[ -d "${target_dotfiles}" ]]; then
+    mv -f "${target_dotfiles}"{,"$(date '+ %F at %H.%M.%S %p')"}
 fi
 
 if [[ -f "${target_profile}" ]]; then
     mv -f "${target_profile}"{,"$(date '+ %F at %H.%M.%S %p')"}
 fi
 
-echo 'done.'
+echo ' done.'
 
 # Download new files
 echo -n 'Downloading some bash badassery...'
 
-if git clone "${source_repo}" "${target_repo}" >/dev/null 2>&1; then
-  echo 'done.'
+if git clone "${source_dotfiles}" "${target_dotfiles}" >/dev/null 2>&1; then
+  echo ' done.'
 else
   echo
-  echo "Ooops, unable to access ${source_repo}, try again."
+  echo "Ooops, unable to access ${source_dotfiles}, try again."
   exit 1
 fi
 
 # Setup existing and new files
 echo -n 'Setting up your bash profile...'
 ln -sf "${source_profile}" "${target_profile}"
-echo 'done.'
+echo ' done.'
 
 # Return successfully, just in case
 echo 'All good, enjoy!'
