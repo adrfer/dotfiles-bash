@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+target_dotfiles="${HOME}/.dotfiles-bash"
+target_profile="${HOME}/.bash_profile"
+
+# Confirm or abort uninstall
+read -r -p 'Sure to uninstall (y/n [n])? '
+
+if [[ ! "${REPLY}" =~ ^[Yy]$ ]]; then
+    echo 'Ok then, nothing much to see here.'
+    exit 0
+fi
+
+# IFS=''
+# read -r -p 'Press RETURN to continue or any other key to abort...' -s -n 1
+# if [[ ! "${REPLY}" = "" ]]; then
+#     echo 'Ok then, nothing much to see here.'
+#     exit 0
+# fi
+
+# Remove existing files, if any
+echo -n 'Removing existing bash files...'
+
+if [[ -d "${target_dotfiles}" ]]; then
+    rm -rf "${target_dotfiles}"
+fi
+
+if [[ -L "${target_profile}" ]]; then
+    rm -f "${target_profile}"
+fi
+
+echo ' done.'
+
+# Restore latest backup, if any
+read -r -p 'Check for backups? (y/n [n])? '
+
+if [[ ! "${REPLY}" =~ ^[Yy]$ ]]; then
+    echo 'All good and clean... farewell.'
+    exit 0
+fi
+
+backed_up_dotfiles=$(find "${HOME}" -maxdepth 1 -type d -name '.dotfiles-bash *' | sort -r | head -n1)
+backed_up_profile=$(find "${HOME}" -maxdepth 1 -type f -name '.bash_profile *' | sort -r | head -n1)
+
+if [[ ! -n "${backed_up_dotfiles}" &&  ! -n "${backed_up_profile}" ]]; then
+    echo 'Oops, no backups found... sorry.'
+    echo 'All good and clean... farewell.'
+    exit 0
+fi
+
+echo -n 'Restoring backup...'
+
+if [[ -n "${backed_up_dotfiles}" ]]; then
+    mv -f "${backed_up_dotfiles}" "${target_dotfiles}"
+fi
+
+if [[ -n "${backed_up_profile}" ]]; then
+    mv -f "${backed_up_profile}" "${target_profile}"
+fi
+
+echo ' done.'
+
+# Return successfully, just in case
+echo 'All good and clean... farewell.'
+exit 0
